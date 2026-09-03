@@ -1,0 +1,17 @@
+{
+  "name": "sikasapa",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:schema": "wrangler d1 execute sikasapa-db --file=./schema.sql",
+    "db:schema:remote": "wrangler d1 execute sikasapa-db --remote --file=./schema.sql",
+    "db:reset:remote": "wrangler d1 execute sikasapa-db --remote --file=./drop-schema.sql && wrangler d1 execute sikasapa-db --remote --file=./schema.sql"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
