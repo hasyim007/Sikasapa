@@ -930,6 +930,7 @@ function renderDashboard(){
       saldoLabels = DB.ekskul.map(e=>e.nama);
       saldoData = DB.ekskul.map(e=>Math.max(saldoEkskul(e.id),0));
       saldoColors = DB.ekskul.map(e=>e.warna);
+      if(saldoLabels.length===0 || saldoData.every(v=>v===0)){ saldoLabels=['Belum ada data']; saldoData=[1]; saldoColors=['#CBD5E1']; }
     }
 
     new Chart(document.getElementById('chartSaldo'), {
