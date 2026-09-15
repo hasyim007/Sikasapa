@@ -1,0 +1,39 @@
+name = "sikasapa"
+main = "src/index.js"
+# Set ke tanggal hari ini setiap kali update dependency Wrangler.
+compatibility_date = "2026-09-03"
+compatibility_flags = ["nodejs_compat"]
+
+# ---------------------------------------------------------------
+# D1 (database, pengganti Postgres Supabase) — buat dulu dengan:
+#   npx wrangler d1 create sikasapa-db
+# lalu salin blok [[d1_databases]] yang ditampilkan (isi database_id
+# yang benar) ke sini, menggantikan placeholder di bawah.
+# ---------------------------------------------------------------
+[[d1_databases]]
+binding = "DB"
+database_name = "sikasapa"
+database_id = "579dc036-75cc-43ec-a059-f5357e02a3e9"
+
+# ---------------------------------------------------------------
+# Static assets — folder public/ (index.html, login.html, admin.html,
+# script_core.js, dst.) disajikan langsung oleh Worker yang sama,
+# TIDAK perlu hosting terpisah (Cloudflare Pages/Netlify/dll).
+# run_worker_first memastikan /rpc/... dan /health SELALU diproses
+# src/index.js, baru sisanya (file HTML/JS statis) dicoba sebagai
+# file di public/.
+# ---------------------------------------------------------------
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/rpc/*", "/health"]
+
+# ---------------------------------------------------------------
+# Variabel non-rahasia. CORS_ORIGIN dibiarkan "*" karena frontend &
+# API sekarang satu origin yang sama (tidak butuh CORS lintas domain
+# lagi) — cukup diganti kalau nanti API ini dipanggil dari domain
+# lain juga (mis. aplikasi mobile terpisah).
+# ---------------------------------------------------------------
+[vars]
+CORS_ORIGIN = "*"
+SESI_LAMA_MS = "43200000"
