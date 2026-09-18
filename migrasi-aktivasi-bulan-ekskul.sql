@@ -1,0 +1,32 @@
+-- =========================================================
+-- MIGRASI — jalankan SEKALI SAJA kalau database SIKasapa Anda
+-- sudah pernah di-deploy SEBELUM fitur "Aktivasi Bulan & Hari
+-- Libur per Ekstrakurikuler" ada (kalau baru mulai dari nol,
+-- tidak perlu file ini — cukup schema.sql, yang sudah menyertakan
+-- kolom ini).
+--
+-- Jalankan lewat D1 Console di Cloudflare Dashboard (Workers & Pages
+-- > D1 > database Anda > tab "Console"), tempel isi file ini lalu
+-- Execute. Atau lewat CLI:
+--   npx wrangler d1 execute sikasapa-db --remote --file=./migrasi-aktivasi-bulan-ekskul.sql
+--
+-- Aman dijalankan terhadap data yang sudah ada (tidak menghapus apa
+-- pun) — cuma menambah DUA kolom baru dengan nilai default kosong
+-- untuk baris ekskul yang sudah ada. Kalau kolom-kolom ini SUDAH ada
+-- (mis. sudah pernah dijalankan sebelumnya, atau database dibuat dari
+-- schema.sql versi baru), perintah ini akan gagal dengan pesan
+-- "duplicate column name" — itu artinya migrasi ini memang tidak
+-- perlu dijalankan lagi.
+--
+-- CATATAN: kolom "Hari Libur Ekstra" yang dulu global (satu untuk
+-- semua ekstrakurikuler, diatur di menu Pengaturan) TIDAK otomatis
+-- disalin ke tiap ekstrakurikuler di sini — formatnya berbeda (dulu
+-- daftar tanggal polos, sekarang tanggal + keterangan per
+-- ekstrakurikuler) dan sebelumnya satu daftar dipakai bersama semua
+-- ekstrakurikuler, jadi tidak ada satu ekstrakurikuler "pemilik" yang
+-- jelas untuk disalin otomatis. Kalau sebelumnya sudah menandai hari
+-- libur ekstra, tandai ulang secara manual per ekstrakurikuler lewat
+-- menu baru "Aktivasi Bulan & Libur" setelah migrasi ini.
+-- =========================================================
+ALTER TABLE ekskul ADD COLUMN bulan_aktif TEXT DEFAULT '{}';
+ALTER TABLE ekskul ADD COLUMN hari_libur TEXT DEFAULT '[]';

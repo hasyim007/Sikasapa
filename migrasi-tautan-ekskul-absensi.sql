@@ -1,0 +1,30 @@
+-- =========================================================
+-- Migrasi: tautan opsional ekskul (iuran) <-> ekstra_absensi (kehadiran)
+--
+-- Sebelum migrasi ini, "Data Ekstrakurikuler" (ekskul, ada iurannya)
+-- dan "Kelola Absensi" (ekstra_absensi, ada kehadirannya) adalah dua
+-- tabel yang SAMA SEKALI terpisah — nama, jadwal hari, dan daftar
+-- peserta harus diinput ulang di 2 tempat tanpa relasi apa pun, dan
+-- tidak ada validasi silang kalau sampai berbeda. Estimasi Tunggakan
+-- untuk ekskul skema "Per Pertemuan" juga murni menghitung dari jadwal
+-- hari (asumsi semua pertemuan pasti terjadi), TIDAK memakai data
+-- kehadiran sebenarnya dari "Kelola Absensi" — jadi siswa yang
+-- izin/sakit/alpa (sudah tercatat guru) tetap muncul "berpotensi
+-- kurang bayar".
+--
+-- Kolom ekstra_absensi_id ini membuat satu ekskul BISA (opsional)
+-- ditautkan ke satu jenis ekstra_absensi:
+--  - Peserta ekstra_absensi tsb otomatis mengikuti peserta ekskul ini
+--    (lihat syncPesertaAbsensiDariEkskul() di public/script_core.js) —
+--    tidak perlu isi peserta 2x lagi, dan tidak akan nyasar diam-diam.
+--  - Estimasi Tunggakan Per Pertemuan memakai status kehadiran asli
+--    (hadir/izin/sakit/alpa) dari tabel absensi, bukan cuma jadwal.
+--
+-- Jalankan SEKALI setelah update kode ini, lewat:
+--   npx wrangler d1 execute sikasapa-db --remote --file=./migrasi-tautan-ekskul-absensi.sql
+-- (kalau kolomnya sudah pernah ditambahkan, perintah ini akan gagal
+-- dengan pesan "duplicate column name" — itu tandanya migrasi ini
+-- sudah pernah dijalankan sebelumnya, aman diabaikan).
+-- =========================================================
+
+ALTER TABLE ekskul ADD COLUMN ekstra_absensi_id TEXT DEFAULT NULL;
